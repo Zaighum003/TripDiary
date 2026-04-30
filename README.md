@@ -2,13 +2,8 @@
 
 A personal travel journalling Flutter mobile application built for the Mobile Applications Development module (55-508210) at Sheffield Hallam University.
 
-## AI Transparency Declaration
-
-**AITS Level 1 - No AI**
-
-All code in this project is 100% student-authored. No AI-generated code has been used in the development of this application.
-
 ---
+
 
 ## Project Overview
 
@@ -33,6 +28,26 @@ TripDiary is a feature-rich offline-first mobile application that allows users t
 - **ViewModel Layer**: ChangeNotifier classes managing app state via Provider
 - **Repository Layer**: Data abstraction for clean separation of concerns
 - **Data Source**: SQLite database via sqflite package
+
+### Key Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `sqflite` | Local SQLite database for offline storage |
+| `provider` | State management using the MVVM pattern |
+| `image_picker` | Accessing device camera and photo gallery |
+| `just_audio` | High-quality audio playback for voice notes |
+| `record` | Audio recording functionality for voice notes |
+| `geolocator` | Real-time GPS coordinate retrieval |
+| `geocoding` | Reverse geocoding (coordinates to place names) |
+| `flutter_local_notifications` | Scheduling trip departure reminders |
+| `local_auth` | Biometric authentication (Face ID / Fingerprint) |
+| `flutter_secure_storage` | Encrypted storage for user PIN |
+| `share_plus` | Native sharing functionality for diary entries |
+| `permission_handler` | Unified system permission management |
+| `timezone` | Cross-platform timezone support for notifications |
+| `intl` | Advanced date and number formatting |
+| `path_provider` | Internal file system path management |
 
 ### Folder Structure
 
