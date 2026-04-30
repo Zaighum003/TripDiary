@@ -75,7 +75,8 @@ test/
   +-- models/                      # Model unit tests
   +-- utils/                       # Utility function tests
   +-- widgets/                     # Widget tests
-  +-- integration/                 # End-to-end integration tests
+integration_test/
+  +-- app_test.dart               # End-to-end integration tests
 ```
 
 ---
@@ -206,9 +207,9 @@ flutter test
 
 ### 2. Integration Tests (E2E)
 Verifies the full end-to-end application flow (PIN setup -> login -> create trip -> add entry -> search).
-These have been moved to the `test/integration/` folder for unified testing.
+**Note:** Ensure an emulator or physical device is running before executing.
 ```bash
-flutter test test/integration/
+flutter test integration_test/app_test.dart
 ```
 
 ---

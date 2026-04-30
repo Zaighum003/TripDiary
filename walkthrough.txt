@@ -1,0 +1,70 @@
+# TripDiary - Technical Walkthrough
+
+## 1. Architectural Pattern: MVVM + Repository
+TripDiary follows the Model-View-ViewModel (MVVM) pattern combined with a Repository layer for data abstraction.
+
+- **Model**: Located in `lib/data/models/`, these classes (Trip, Entry) define the data structure and handle JSON/Map serialization for database storage.
+- **View**: Located in `lib/views/`, these are Flutter widgets that only focus on the UI. They don't contain business logic.
+- **ViewModel**: Located in `lib/viewmodels/`, these classes (e.g., TripViewModel) manage the application state. They act as a bridge between the Repository and the View, using `notifyListeners()` to update the UI.
+- **Repository**: Located in `lib/data/repositories/`, this layer abstracts the data source. Whether the data comes from SQLite or a future API, the ViewModel doesn't need to change its logic.
+
+## 2. User Interface and Dynamic Layout
+The UI is built using Material Design 3 components to ensure a modern, user-friendly experience.
+
+- **Dynamic Layout**: We use `CustomScrollView` and `Sliver` widgets in `TripDetailScreen` to create a collapsible header effect with the trip's cover image.
+- **Responsive Design**: For narrow screens (like those in test emulators), we refactored horizontal `Row` layouts into vertical `Column` structures in `EntryFormScreen` to prevent `RenderFlex` overflows.
+- **User-Friendly Features**: 
+  - `LocationBadge` with `TextOverflow.ellipsis` to handle long addresses gracefully.
+  - Custom `PinEntryField` with visual feedback for secure entry.
+  - `Swipe-to-delete` gestures on trip cards for intuitive management.
+
+## 3. State Management Implementation
+State management is implemented using the **Provider** package.
+
+- **Code Explanation**:
+  - In `lib/main.dart`, `MultiProvider` is used to wrap the app, providing instances of `AuthViewModel`, `TripViewModel`, etc.
+  - ViewModels extend `ChangeNotifier`. For example, in `TripViewModel.addTrip()`:
+    ```dart
+    final id = await _tripRepository.insert(trip);
+    _trips.insert(0, trip.copyWith(id: id));
+    notifyListeners(); // This triggers a UI rebuild
+    ```
+  - In the View, we use `Consumer<TripViewModel>` or `context.watch<TripViewModel>()` to listen for these changes and update the widget tree automatically.
+
+## 4. Functionalities and Mobile Device Capabilities
+The app exploits several native mobile features:
+
+- **Camera & Gallery**: Implemented in `ImageService` using `image_picker`. It allows users to document trips visually.
+- **Microphone (Audio Recording)**: Implemented in `VoiceRecordService` using the `record` package. Users can record voice notes for each diary entry.
+- **GPS & Geocoding**: Implemented in `LocationService` using `geolocator`. It captures the device's latitude/longitude and uses `geocoding` to convert those coordinates into a human-readable address (Reverse Geocoding).
+- **Notifications**: Implemented in `NotificationService` using `flutter_local_notifications`. The app schedules local reminders for trip departure dates using the device's native alarm system.
+- **Biometrics**: Implemented in `AuthViewModel` using `local_auth`. It leverages the device's secure enclave (Face ID/Fingerprint) for instant, secure login.
+- **Sharing**: Implemented in `ShareService` using `share_plus`. It opens the native Android/iOS share sheet to export diary text and photos to other apps.
+
+## 5. Security Features
+Security is a core focus, protecting user data locally:
+
+- **Secure Storage**: The user's PIN is never stored in plain text. We use `flutter_secure_storage`, which utilizes Keychain (iOS) and Keystore (Android) for encrypted storage.
+- **Biometric Authentication**: Users can enable Face ID or Fingerprint login. The app verifies the biometric signature via the `local_auth` package before granting access to the diary.
+- **Session Protection**: The `AuthGate` widget wraps the entire app, ensuring that the user is redirected to the `LoginScreen` whenever the app is restarted or the session expires.
+
+## 6. Local Database and CRUD Operations
+The app uses **SQLite** via the `sqflite` package for reliable, offline-first data persistence.
+
+- **Implementation**: `DatabaseHelper` (lib/data/database/) manages the singleton database instance and schema creation.
+- **CRUD Operations**: Handled in the Repository layer (e.g., `TripRepository`):
+  - **Create**: `db.insert('trips', trip.toMap())`
+  - **Read**: `db.query('trips', orderBy: 'start_date DESC')`
+  - **Update**: `db.update('trips', trip.toMap(), where: 'id = ?', whereArgs: [trip.id])`
+  - **Delete**: `db.delete('trips', where: 'id = ?', whereArgs: [id])`
+
+## 7. Automated Testing
+We have a three-tier testing strategy to ensure application stability:
+
+- **Unit Tests (`test/models/`, `test/utils/`)**: Test business logic and data serialization. We test these because they are the foundation of the app's data integrity.
+- **Widget Tests (`test/widgets/`)**: Test individual UI components (like the PIN field and search bar) in isolation to ensure they render and react correctly to user input.
+- **Integration Tests (`test/integration/`)**: Test full end-to-end user flows. We moved these to the `test/` folder for unified execution. These are critical as they verify that all components (Database, ViewModels, and UI) work together seamlessly.
+
+### Running the Tests:
+- Run all unit and widget tests: `flutter test`
+- Integration Tests: `flutter test integration_test/app_test.dart`
