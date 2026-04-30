@@ -144,9 +144,9 @@ dependencies:
 
 - Flutter SDK (latest stable)
 - Android SDK (API 23+) or iOS 13+
-- Android Studio or Xcode
+- Android Studio / VS Code with Flutter extension
 
-### Installation
+### Installation & Setup
 
 1. **Clone the repository**
    ```bash
@@ -159,26 +159,41 @@ dependencies:
    flutter pub get
    ```
 
-3. **Run on Android Emulator**
+3. **Verify Environment**
    ```bash
-   flutter run -d emulator-5554
+   flutter doctor
    ```
 
-4. **Run on iOS Simulator**
+4. **Run the Application**
    ```bash
-   flutter run -d iOS
+   # Run on the first available connected device or emulator
+   flutter run
    ```
 
-### Running Tests
+### Verification Steps
 
+To ensure the application is correctly installed and functional:
+1. **PIN Setup**: On first launch, you should see the "New PIN" setup screen.
+2. **Home Screen**: After setting a PIN, you should arrive at the "Home" screen with an "Add Trip" button.
+3. **Persistence**: Create a test trip; it should remain visible even after restarting the application.
+
+---
+
+## Testing Suite
+
+The project includes a comprehensive test suite covering unit, widget, and integration tests.
+
+### 1. Unit & Widget Tests
+Verifies business logic, viewmodels, and UI components.
 ```bash
-# Unit tests
-flutter test test/
+# Run all unit and widget tests
+flutter test
+```
 
-# Widget tests
-flutter test test/widgets/
-
-# Integration tests
+### 2. Integration Tests (E2E)
+Verifies the full end-to-end application flow (PIN setup -> login -> create trip -> add entry -> search).
+**Note:** Ensure an emulator or physical device is running before executing.
+```bash
 flutter test integration_test/app_test.dart
 ```
 
@@ -350,7 +365,7 @@ UI reflects changes
 - ✅ Widget and integration tests
 - ✅ Platform permissions configured (Android/iOS)
 - ✅ Material Design 3 UI
-- ✅ AI Transparency Declaration (Level 1 - No AI)
+- ✅ No AI tools used in core development
 
 ---
 
