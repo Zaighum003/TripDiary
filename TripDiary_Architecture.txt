@@ -1,0 +1,100 @@
+
+
+
+TripDiary
+Mobile Application Architecture Document
+Module: Mobile Applications Development (55-508210)
+Sheffield Hallam University | 2025-26
+
+
+
+
+1. Application Overview
+TripDiary is a personal travel journalling mobile application built with Flutter SDK and Dart. It allows users to create trip records, attach photos, voice notes, and location data to diary entries, receive trip reminders, and share memories. The app operates entirely offline using local SQLite storage.
+
+2. Architectural Pattern: MVVM + Repository
+2.1 Why MVVM?
+MVVM (Model-View-ViewModel) was selected because:
+• It enforces a clean separation between UI and business logic
+• ViewModels are easily unit-testable without the UI layer
+• Provider (state management) integrates naturally as the binding layer
+• It differs from the MVP pattern commonly taught in class
+
+2.2 Layer Breakdown
+
+LayerResponsibilityFlutter ImplementationViewUI widgets only, no business logicScreens & reusable WidgetsViewModelExposes state, handles user actions, calls repositoryChangeNotifier classes via ProviderRepositoryAbstracts data source, single source of truthTripRepository, EntryRepositoryData SourceActual database operationsSQLite via sqflite packageModelPure data classesTrip, Entry, Location Dart classes
+2.3 Folder Structure
+The project follows a feature-first structure combined with layer separation:
+
+lib/
+  +-- main.dart                    # Entry point + Provider setup
+  +-- core/
+  ¦   +-- constants/               # App-wide constants, colors, strings
+  ¦   +-- utils/                   # Helper functions
+  ¦   +-- theme/                   # ThemeData, TextTheme
+  +-- data/
+  ¦   +-- models/                  # Trip, Entry, AppUser models
+  ¦   +-- database/                # DatabaseHelper (sqflite singleton)
+  ¦   +-- repositories/            # TripRepository, EntryRepository
+  +-- viewmodels/
+  ¦   +-- trip_viewmodel.dart      # Trip CRUD + state
+  ¦   +-- entry_viewmodel.dart     # Entry CRUD + state
+  ¦   +-- auth_viewmodel.dart      # Auth state
+  +-- views/
+  ¦   +-- screens/                 # Full page screens
+  ¦   +-- widgets/                 # Reusable UI components
+  +-- services/                    # NotificationService, LocationService
+
+2.4 Data Flow Diagram
+
+StepFromToWhat Happens1User taps 'Add Entry'View ? ViewModelUI calls entryViewModel.addEntry(data)2ViewModel validatesViewModel ? RepositoryCalls entryRepository.insert(entry)3Repository persistsRepository ? Databasesqflite INSERT operation executes4State notifiedDatabase ? ViewModel ? ViewnotifyListeners() re-renders UI
+
+
+3. Design Patterns Used
+
+PatternWhere UsedPurposeRepository Patterndata/repositories/Abstracts data source from ViewModelSingletonDatabaseHelperSingle database connection instanceObserver (Provider)ViewModels + ViewsReactive UI state updatesFactory ConstructorModel classesfromMap() for database deserializationService Locatormain.dart MultiProviderCentral dependency registration
+4. State Management
+4.1 Strategy
+The app uses the Provider package which implements the Observer pattern. Two types of state are managed:
+
+State TypeDefinitionExample in TripDiaryEphemeral StateLives within a single widget, not sharedForm field inputs, loading spinners, tab indexApp StateShared across widgets, persists in ViewModelList of trips, current user, selected entry
+4.2 Provider Setup (main.dart)
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthViewModel()),
+        ChangeNotifierProvider(create: (_) => TripViewModel(TripRepository())),
+        ChangeNotifierProvider(create: (_) => EntryViewModel(EntryRepository())),
+      ],
+      child: const TripDiaryApp(),
+    ),
+  );
+}
+
+5. Local Database Architecture
+5.1 Technology
+SQLite via the sqflite Flutter package. The DatabaseHelper class is a Singleton that manages the database lifecycle.
+
+5.2 Database Schema
+
+TableColumnTypeDescriptiontripsidINTEGER PKAuto-increment primary keytripstitleTEXTTrip nametripsdestinationTEXTLocation nametripsstart_dateTEXTISO8601 date stringtripsend_dateTEXTISO8601 date stringtripscover_image_pathTEXTLocal file pathentriesidINTEGER PKAuto-increment primary keyentriestrip_idINTEGER FKForeign key to trips.identriestitleTEXTEntry titleentriesbodyTEXTEntry text contententriesphoto_pathTEXTLocal image file pathentriesvoice_note_pathTEXTLocal audio file pathentrieslatitudeREALGPS latitudeentrieslongitudeREALGPS longitudeentrieslocation_nameTEXTHuman-readable place nameentriescreated_atTEXTISO8601 timestamp
+5.3 CRUD Operations
+Each repository implements the full Create-Read-Update-Delete lifecycle:
+• CREATE: insert(trip) - inserts new record, returns generated id
+• READ: getAll() - returns List<Trip>, getById(id) - single record
+• UPDATE: update(trip) - updates all fields by primary key
+• DELETE: delete(id) - removes record by primary key
+
+
+
+6. Security Architecture
+
+FeatureImplementationPackageBiometric / PIN AuthLocalAuthentication on app launch guards diary accesslocal_authSecure StorageAuth credentials stored in encrypted keystoreflutter_secure_storageRoute GuardsAuthViewModel checks login state before navigating to protected screensProvider + NavigatorPermission HandlingAll sensitive permissions requested at runtime with rationale shownpermission_handler
+7. Navigation Architecture
+Three navigation patterns are used to satisfy the marking criteria:
+
+PatternWhere UsedReasonBottomNavigationBarMain app shell (Home, Map, Settings)Primary navigation between top sectionsStack Navigation (Navigator.push)Trips list ? Trip Detail ? Entry DetailHierarchical drill-down flowTabBarEntry Detail screen (Details tab / Photos tab)Lateral navigation within a screen
+8. Key Flutter Packages
+
+PackageVersionPurposesqflite^2.3.0Local SQLite databasepath_provider^2.1.0App file system pathsprovider^6.1.0State management (MVVM binding)image_picker^1.0.0Camera & gallery accessspeech_to_text^6.3.0Voice-to-text for search & notesjust_audio^0.9.36Voice note playbackrecord^5.0.4Audio recordinggeolocator^11.0.0GPS location (free, no API key)flutter_local_notifications^17.0.0Trip remindersshare_plus^7.2.0Native share sheetlocal_auth^2.1.6Biometric / PIN authenticationflutter_secure_storage^9.0.0Encrypted credential storagepermission_handler^11.0.0Runtime permission requestsintl^0.18.0Date/time formatting

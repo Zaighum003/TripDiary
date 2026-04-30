@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleDisplayName</key>
+    <string>TripDiary</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>trip_diary</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+    <key>UIMainStoryboardFile</key>
+    <string>Main</string>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>arm64</string>
+    </array>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>UISupportedInterfaceOrientationsIpad</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <true/>
+
+    <!-- Permissions for iOS -->
+    <key>NSCameraUsageDescription</key>
+    <string>We need camera access to capture photos for your diary entries.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>We need microphone access to record voice notes for your entries.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need location access to tag your diary entries with GPS coordinates.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We need location access to tag your diary entries with GPS coordinates.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need photo library access to select photos for your entries.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need permission to save photos from your diary.</string>
+    
+    <!-- Face ID / Touch ID -->
+    <key>NSFaceIDUsageDescription</key>
+    <string>We use Face ID to secure your diary with biometric authentication.</string>
+    
+    <!-- Local Notifications -->
+    <key>UIApplicationSupportsIndirectInputEvents</key>
+    <true/>
+</dict>
+</plist>

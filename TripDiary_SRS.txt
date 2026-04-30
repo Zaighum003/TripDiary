@@ -1,0 +1,139 @@
+
+
+
+TripDiary
+Software Requirements Specification (SRS)
+Version 1.0  |  Module 55-508210  |  Sheffield Hallam University
+
+
+
+
+1. Introduction
+1.1 Purpose
+This Software Requirements Specification (SRS) describes the functional and non-functional requirements for TripDiary, a Flutter-based personal travel journalling mobile application. This document serves as a reference for design, development, testing and assessment of the application for the Mobile Applications Development module (55-508210) at Sheffield Hallam University.
+
+1.2 Scope
+TripDiary is a mobile application targeting Android and iOS platforms via Flutter. The app enables users to:
+• Create and manage trip records with photos and metadata
+• Log diary entries enriched with camera photos, voice notes, and GPS location
+• Set trip reminder notifications
+• Perform voice search across entries
+• Share entries with other applications
+• Secure the diary with biometric or PIN authentication
+The application does not require internet connectivity and uses no paid external APIs.
+
+1.3 Definitions & Abbreviations
+
+TermDefinitionTripA top-level record representing a travel event with a title, destination and date rangeEntryA diary record belonging to a Trip, containing text, photo, voice note and locationCRUDCreate, Read, Update, Delete - the four basic database operationsMVVMModel-View-ViewModel - the architectural pattern used in this applicationSQLiteLightweight relational database stored locally on the deviceSDKSoftware Development Kit - here referring to Flutter SDKGPSGlobal Positioning System - used for location taggingSRSSoftware Requirements Specification - this document
+1.4 Overview
+Section 2 provides an overall system description. Section 3 details all functional requirements mapped to mobile features. Section 4 covers non-functional requirements. Section 5 lists external interface requirements. Section 6 describes constraints and assumptions.
+
+
+
+2. Overall System Description
+2.1 Product Perspective
+TripDiary is a standalone native mobile application. It operates fully offline; all data is persisted to a local SQLite database on the device. There is no backend server, cloud sync, or paid third-party API dependency.
+
+2.2 Product Functions (Summary)
+
+IDFunctionMobile Feature UsedF-01Photo Entry CaptureCameraF-02Voice Note Recording & PlaybackMicrophone & SpeakersF-03GPS Location TaggingLocation / GPSF-04Trip Reminder NotificationsLocal NotificationsF-05Entry SharingNative Share SheetF-06Voice SearchMicrophone (speech_to_text)F-07Biometric / PIN AuthenticationBiometric Sensor / Secure KeystoreF-08Swipe Gesture ActionsCustom Gesture DetectorF-09Local Database CRUD (Trips & Entries)Internal Storage
+2.3 User Classes
+• Primary User: Individual traveller who records personal travel memories
+• The app has a single user role; authentication is local device-based
+
+2.4 Operating Environment
+• Flutter SDK (latest stable)
+• Android 6.0+ (API 23+) and iOS 13+
+• Device must have camera, microphone, GPS, and notification capability
+
+2.5 Assumptions and Dependencies
+• No internet connection is required for core functionality
+• Device hardware (camera, microphone, GPS) is functional
+• User grants required runtime permissions
+• sqflite, provider, and all listed packages are available on pub.dev at no cost
+
+
+
+3. Functional Requirements
+3.1 Authentication (SEC)
+
+IDRequirementPrioritySEC-01The app shall require the user to authenticate with biometrics or a PIN before accessing the diaryHIGHSEC-02The app shall store the PIN securely using flutter_secure_storage (encrypted keystore)HIGHSEC-03The app shall lock and return to the login screen after 3 failed authentication attemptsMEDIUMSEC-04The app shall display a clear error message when authentication failsMEDIUMSEC-05The app shall fall back to PIN entry if biometrics are unavailable on the deviceHIGH
+3.2 Trip Management (TRP)
+
+IDRequirementPriorityTRP-01The user shall be able to create a new Trip with a title, destination, start date, end date, and optional cover photoHIGHTRP-02The user shall be able to view a scrollable list of all saved tripsHIGHTRP-03The user shall be able to edit any field of an existing tripHIGHTRP-04The user shall be able to delete a trip and all its associated entriesHIGHTRP-05The user shall be able to view the total number of entries in a trip from the trip cardLOW
+3.3 Entry Management (ENT)
+
+IDRequirementPriorityENT-01The user shall be able to create a new diary entry within a trip containing a title and body textHIGHENT-02The user shall be able to attach one photo to an entry using the device camera or galleryHIGHENT-03The user shall be able to record a voice note and attach it to an entryHIGHENT-04The user shall be able to play back a recorded voice note from within the entry detail screenHIGHENT-05The user shall be able to tag an entry with the current GPS locationHIGHENT-06The app shall reverse-geocode the GPS coordinates to a human-readable place nameMEDIUMENT-07The user shall be able to edit an existing entryHIGHENT-08The user shall be able to delete an entry by swiping it left (custom gesture)MEDIUMENT-09The user shall be able to share an entry's text content and photo via the native share sheetMEDIUM
+3.4 Voice Search (SRCH)
+
+IDRequirementPrioritySRCH-01The app shall provide a search bar on the Home screenHIGHSRCH-02The user shall be able to initiate voice search by tapping a microphone icon on the search barHIGHSRCH-03The app shall convert spoken words to text using speech_to_text and populate the search fieldHIGHSRCH-04The app shall filter the trips list in real time based on the search queryHIGHSRCH-05The app shall display a clear empty-state message when no results matchLOW
+3.5 Notifications (NOTIF)
+
+IDRequirementPriorityNOTIF-01The user shall be able to set a reminder notification for a trip departure dateHIGHNOTIF-02The app shall schedule a local notification using flutter_local_notificationsHIGHNOTIF-03The app shall request notification permission from the user before schedulingHIGHNOTIF-04The notification shall contain the trip title and destination in the notification bodyMEDIUMNOTIF-05Tapping the notification shall open the app and navigate to the relevant tripMEDIUM
+3.6 Local Database CRUD (DB)
+Note: These CRUD operations are independent of application functionalities per the assessment brief.
+
+IDRequirementPriorityDB-01The app shall CREATE a new Trip record in the SQLite databaseHIGHDB-02The app shall READ all Trip records and display them in the Trips list screenHIGHDB-03The app shall UPDATE a Trip record when the user edits trip detailsHIGHDB-04The app shall DELETE a Trip record and cascade-delete all related Entry recordsHIGHDB-05The app shall CREATE a new Entry record linked to a Trip via foreign keyHIGHDB-06The app shall READ all Entry records for a given TripHIGHDB-07The app shall UPDATE an Entry record when the user edits an entryHIGHDB-08The app shall DELETE an Entry record by swipe actionHIGH
+
+
+4. Non-Functional Requirements
+4.1 Performance
+• The app shall launch to the home screen in under 3 seconds on a mid-range device
+• Database queries shall return results within 500ms for up to 500 records
+• Voice-to-text conversion shall begin within 1 second of microphone activation
+
+4.2 Usability
+• The UI shall follow Material Design 3 guidelines
+• The app shall be responsive to screen sizes from 360dp to 600dp width
+• All interactive elements shall have a minimum touch target size of 48x48dp
+• Error messages shall be shown in Snackbar or Dialog with actionable text
+
+4.3 Reliability
+• The app shall not lose user data on unexpected termination (state preserved to DB on every write)
+• The app shall handle permission denial gracefully without crashing
+• All database operations shall use try-catch blocks with user-visible error handling
+
+4.4 Security
+• The app shall not store the user PIN in plain text
+• All sensitive data shall be stored using flutter_secure_storage
+• Camera, microphone and location permissions shall be declared in AndroidManifest.xml and Info.plist
+
+4.5 Maintainability
+• All code shall follow SOLID principles
+• No widget shall exceed 250 lines; complex widgets shall be extracted to separate files
+• The Repository pattern shall ensure all database logic is decoupled from ViewModels
+• Minimum 60% unit test coverage on ViewModel and Repository layers
+
+5. User Interface Requirements
+5.1 Screens
+
+ScreenLayout UsedNavigation PatternDescriptionLogin ScreenColumn (Flex)Route GuardPIN / biometric entry before accessing diaryHome / Trips ListListView (Scroll)BottomNavBar tabShows all trips as cards with title and entry countAdd/Edit TripSingleChildScrollView + FormStack push from HomeForm with date pickers and cover photo selectionTrip DetailCustomScrollView (SliverAppBar + GridView)Stack push from HomeShows trip header and entry gridAdd/Edit EntryColumn + ScrollViewStack push from Trip DetailForm with camera, voice, location buttonsEntry DetailTabBarView (2 tabs)Stack push from Trip DetailTab 1: Text + location. Tab 2: Photo + voice playerSettingsListViewBottomNavBar tabChange PIN, app theme toggle
+5.2 Widgets
+• TripCard - reusable card widget with trip image, title, destination, date range, and entry count
+• EntryThumbnail - grid tile showing entry photo, title and location badge
+• VoicePlayerWidget - play/pause/seek bar for voice note playback
+• LocationBadge - pill showing place name with map pin icon
+• AuthGate - wraps the Navigator and redirects to LoginScreen when unauthenticated
+
+
+
+6. Testing Requirements
+
+Test TypeTargetToolExample Test CasesUnit TestsTripViewModel, EntryViewModel, TripRepositoryflutter_testaddTrip() increments trip list; deleteTrip() removes entryWidget TestsTripCard, EntryThumbnail, LoginScreenflutter_test + WidgetTesterTripCard renders title text; Login shows error on wrong PINIntegration TestsAdd Entry flow end-to-endintegration_test packageUser adds entry with text and photo, entry appears in trip detail
+7. Constraints & Compliance
+7.1 Technical Constraints
+• Must be built using Flutter SDK and Dart only - no HTML, JavaScript or PHP files
+• No paid external APIs may be used
+• Must use local SQLite storage (sqflite) - no remote database
+• Code must be 100% student-authored; no AI-generated code
+
+7.2 Academic Constraints
+• Architectural pattern used must differ from patterns implemented in class exercises
+• All runtime permissions must be explicitly requested with rationale
+• Automated tests must be included in the project submission
+• A publishability report of no more than 500 words must accompany the submission
+• An AI Transparency Declaration (AITS Level 1 - No AI) must appear in main.dart and report appendix
+
+8. Requirements Traceability Matrix
+
+Requirement IDDescriptionMobile FeatureMark CriteriaF-01 (ENT-02)Photo captureCameraFunctionality + Mobile FeatureF-02 (ENT-03/04)Voice note record/playMicrophone + SpeakersFunctionality + Mobile FeatureF-03 (ENT-05/06)GPS location taggingLocation/GPSFunctionality + Mobile FeatureF-04 (NOTIF-01-05)Trip remindersNotificationsFunctionality + Mobile FeatureF-05 (ENT-09)Entry sharingShare SheetFunctionality + Mobile FeatureF-06 (SRCH-01-05)Voice searchMicrophoneFunctionality + Mobile FeatureF-07 (SEC-01-05)Biometric/PIN authBiometric SensorSecurity + Mobile FeatureF-08 (ENT-08)Swipe to deleteCustom GestureFunctionality + Mobile FeatureDB-01 to DB-08Full CRUD operationsInternal StorageLocal Database criterionAll requirementsMVVM + Repository architectureN/AArchitectural Pattern criterionAll requirementsProvider state managementN/AState Management criterion
