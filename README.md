@@ -150,7 +150,8 @@ dependencies:
 
 1. **Clone the repository**
    ```bash
-   cd d:\All_Projects\Flutter_application_tripDiary
+   git clone https://github.com/Zaighum003/TripDiary.git
+   cd TripDiary
    ```
 
 2. **Install dependencies**
